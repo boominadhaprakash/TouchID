@@ -32,6 +32,14 @@ class ViewController: UIViewController {
         {
             //Authentication Success
             print("Auth success")
+            auth.evaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Touch ID", reply: {(success,error)in
+                if success{
+                    print("success")
+                }else{
+                    print("No Touch ID")
+                    
+                }
+            })
         }
         else
         {
