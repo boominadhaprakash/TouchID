@@ -9,41 +9,37 @@
 import UIKit
 import LocalAuthentication
 
-class ViewController: UIViewController {
-
-    //MARK:- iVars
-    @IBOutlet weak var enableaccessbtn: UIButton!
+class ViewController: UIViewController, TouchIDDelegate {
     
-    //MARK:- Overridden functions
+    //MARK: - iVars
+    lazy var enableAccessBtn: TouchIDButton = {
+        let btn = TouchIDButton()
+        btn.localizedReason = "Test Authentication"
+        btn.setTitle("Click for Touch ID Authentication", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.sizeToFit()
+        btn.center = self.view.center
+        return btn
+    }()
+    
+    //MARK: - Overridden functions
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        self.view.addSubview(enableAccessBtn)
+        enableAccessBtn.delegate = self
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    //MARK:- Private functions
-    @IBAction private func enableaccessact(_ sender: Any) {
-        let auth = LAContext()
-        var error:NSError?
-        if auth.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            debugPrint("Auth success")
-            auth.evaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Touch ID", reply: {(success,error)in
-                if success {
-                    debugPrint("success")
-                }else {
-                    debugPrint("No Touch ID")
-                }
-            })
-        }
-        else {
-            let alertController = UIAlertController(title: "Error!", message: "Device doesn't support Biometric access/Touch ID", preferredStyle: .alert)
-            let okAct = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(okAct)
-            self.present(alertController, animated: true, completion: nil)
-        }
+    
+    func didAuthenticateSuccess() {
+        debugPrint("Authentication Success")
+    }
+    
+    func didAuthenticateError(with error: Error) {
+        debugPrint("Authentication Error: \(error)")
     }
 }
 
